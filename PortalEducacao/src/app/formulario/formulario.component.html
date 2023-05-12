@@ -1,0 +1,246 @@
+<div class="container bg bg-light mx-auto max-width-600 mt-3 border border-light rounded px-0">
+    <header class="bg bg-dark border rounded-top">
+        <p class="text-white mx-2 my-1">Cadastro <i class="fa-regular fa-paste"></i></p>
+    </header>
+    <form #formulario [formGroup]="ngForm" (ngSubmit)="onSubmit(ngForm)" class="px-3 mt-3">
+        <fieldset>
+            <legend>Dados Cadastrais</legend>
+            <div class="row">
+                <div class="col-3">
+                    <div class="form-group">
+                        <label for="nome">Nome<span class="text-danger">*</span>:</label>
+                        <input type="text" placeholder="Nome" id="nome" formControlName="nome" class="form-control">
+                        <div *ngIf="(ngForm.controls['nome'].invalid && ngForm.controls['nome'].touched)">
+                            <span class="text-danger">Nome é obrigatório</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <label for="cpf">CPF<span class="text-danger">*</span>:</label>
+                        <input type="text" placeholder="111.111.111-11" id="cpf" formControlName="cpf" class="form-control" mask="000.000.000-00">
+                        <div *ngIf="(ngForm.controls!['cpf'].errors != null && ngForm.controls['cpf'].touched)">
+                            <span class="text-danger">CPF inválido</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <label for="sexo">Sexo<span class="text-danger">*</span>:</label>
+                        <select name="sexo" id="sexo" placeholder="Selecione" class="form-control">
+                            <option value="F">Feminino</option>
+                            <option value="M">Masculino</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <label for="ecivil">Estado Civil<span class="text-danger">*</span>:</label>
+                        <select name="ecivil" id="ecivil" placeholder="Selecione" class="form-control">
+                            <option value="S">Solteiro</option>
+                            <option value="C">Casado</option>
+                            <option value="D">Divorciado</option>
+                            <option value="V">Viúvo</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2 mb-1">
+                <div class="col-3">
+                    <div class="form-group">
+                        <label for="dtnascimento">Data de Nascimento<span class="text-danger">*</span>:</label>
+                        <input type="date" placeholder="dia/mes/ano" id="dtnascimento" formControlName="dtnascimento" class="form-control">
+                        <div *ngIf="(ngForm.controls['dtnascimento'].invalid && ngForm.controls['dtnascimento'].touched)">
+                            <span class="text-danger">Você deve ser maior de idade</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <label for="usuario">Nome de Usuário<span class="text-danger">*</span>:</label>
+                        <input type="usuario" placeholder="fulano12_3" id="usuario" formControlName="usuario" class="form-control">
+                        <div *ngIf="(ngForm.controls!['usuario'].errors != null && ngForm.controls['usuario'].touched)">
+                            <span *ngIf="ngForm.controls!['usuario'].errors!['numerico'] != null" class="text-danger">Usuário não pode ser apenas numérico ou começar com número</span>
+                            <span *ngIf="ngForm.controls!['usuario'].errors!['vazio'] != null" class="text-danger">Campo não pode ficar vazio</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <label for="senha">Senha<span class="text-danger">*</span>:</label>
+                        <input type="password" placeholder="Senha" id="senha" formControlName="senha" class="form-control">
+                        <div *ngIf="(ngForm.controls['senha'].invalid && ngForm.controls['senha'].touched)">
+                            <span class="text-danger">Senha é obrigatório</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <label for="csenha">Confirme a Senha<span class="text-danger">*</span>:</label>
+                        <input type="password" placeholder="Senha novamente" id="csenha" formControlName="csenha" class="form-control">
+                        <div *ngIf="(ngForm.controls['csenha'].invalid && ngForm.controls['csenha'].touched && ngForm.controls['csenha'].value=='')">
+                            <span class="text-danger">Confirme a senha</span>
+                        </div>
+                        <div *ngIf="ngForm.controls['csenha'].value!=ngForm.controls['senha'].value && ngForm.controls['csenha'].value!=''">
+                            <span class="text-danger">Senhas não condizem</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2 mb-1">
+                <div class="col-3">
+                    <div class="form-group">
+                        <label for="escolaridade">Escolaridade<span class="text-danger">*</span>:</label>
+                        <select name="escolaridade" id="escolaridade" class="form-control" formControlName="escolaridade">
+                            <option value="MI">Médio Incompleto</option>
+                            <option value="MC">Médio Completo</option>
+                            <option value="SI">Superior Incompleto</option>
+                            <option value="SC">Superior Completo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <label for="pretensaoSalarial">Pretensão salarial<span class="text-danger">*</span>:</label>
+                        <input type="text" formControlName="pretensaoSalarial" id="pretensaoSalarial" class="form-control" mask="0*,00" (keypress)="isPositive($event)">
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset class="mt-1">
+            <legend>Cursos/Especializações:</legend>
+            <div *ngFor="let exper of getArray('cursos').controls;let i = index;" formArrayName="cursos">
+                <div [formGroupName]="i">
+                    <div class="row">
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label for="curso{{i}}">Curso<span class="text-danger">*</span>:</label>
+                                <input type="text" class="form-control" name="curso{{i}}" id="curso{{i}}" formControlName="curso">
+                                <div *ngIf="(exper.get('curso')!.value==='' && exper.get('curso')!.touched)">
+                                    <span class="text-danger" >Curso é obrigatório</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label for="instituicao{{i}}">Instituição<span class="text-danger">*</span>:</label>
+                                <input type="text" class="form-control" name="instituicao{{i}}" id="instituicao{{i}}" formControlName="instituicao">
+                                <div *ngIf="(exper.get('instituicao')!.value==='' && exper.get('instituicao')!.touched)">
+                                    <span class="text-danger" >Instituição é obrigatório</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label for="inicio_curso{{i}}">Ano Inicial<span class="text-danger">*</span>:</label>
+                                <input type="text" class="form-control" name="inicio_curso{{i}}" id="inicio_curso{{i}}" formControlName="inicio_curso" mask="0000" placeholder="Ano">
+                                <div *ngIf="(exper.get('inicio_curso')!.value==='' && exper.get('inicio_curso')!.touched)">
+                                    <span class="text-danger" >Campo Ano Inicial é obrigatório</span>
+                                </div>
+                                <div *ngIf="exper.errors!=null && exper.get('inicio_curso')!.touched && exper.get('fim_curso')!.touched">
+                                    <span class="text-danger" >Ano inicial não pode ser maior que ano final</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label for="fim_curso{{i}}">Ano Final<span class="text-danger">*</span>:</label>
+                                <input type="text" class="form-control" name="fim_curso{{i}}" id="fim_curso{{i}}" formControlName="fim_curso" mask="0000" placeholder="Ano">
+                                <div *ngIf="(exper.get('fim_curso')!.value==='' && exper.get('fim_curso')!.touched)">
+                                    <span class="text-danger" >Campo Ano Final é obrigatório</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="float-end mt-3">
+                                <label>&nbsp;</label>
+                                <button type="button" id='remove' class="border mt-2 border-rounded btn bg bg-danger text-white" (click)="removerLinha(i,'cursos')"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="float-end mt-3">
+                        <label>&nbsp;</label>
+                        <button type="button" id='addCurso' class="border mt-2 border-rounded btn bg bg-success text-white" (click)="adicionarFormArray('cursos')"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset class="mt-1">
+            <legend>Experiência:</legend>
+            <div *ngFor="let exper of getArray('experiencia').controls;let i = index;" formArrayName="experiencia">
+                <div [formGroupName]="i">
+                    <div class="row">
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label for="empresa{{i}}">Empresa<span class="text-danger">*</span>:</label>
+                                <input type="text" class="form-control" name="empresa{{i}}" id="empresa{{i}}" formControlName="empresa">
+                                <div *ngIf="(exper.get('empresa')!.value==='' && exper.get('empresa')!.touched)">
+                                    <span class="text-danger" >Empresa é obrigatório</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label for="cargo{{i}}">Cargo<span class="text-danger">*</span>:</label>
+                                <input type="text" class="form-control" name="cargo{{i}}" id="cargo{{i}}" formControlName="cargo">
+                                <div *ngIf="(exper.get('cargo')!.value==='' && exper.get('cargo')!.touched)">
+                                    <span class="text-danger" >Empresa é obrigatório</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label for="inicioex{{i}}">Inicio<span class="text-danger">*</span>:</label>
+                                <input type="date" class="form-control" name="inicioex{{i}}" id="inicioex{{i}}" formControlName="inicioex" placeholder="dia/mes/ano">
+                            </div>
+                            <div *ngIf="(exper.get('inicioex')!.value==='' && exper.get('inicioex')!.touched)">
+                                <span class="text-danger" >Campo início da experiência é obrigatório</span>
+                            </div>
+                            <div *ngIf="exper.errors!=null && exper.get('inicioex')!.touched && exper.get('fimex')!.touched">
+                                <span class="text-danger" >Início não pode ser maior que Fim da experiência</span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label for="fimex{{i}}">Fim<span class="text-danger">*</span>:</label>
+                                <input type="date" class="form-control" name="fimex{{i}}" id="fimex{{i}}" formControlName="fimex" placeholder="dia/mes/ano">
+                                <div *ngIf="(exper.get('fimex')!.value==='' && exper.get('fimex')!.touched)">
+                                    <span class="text-danger" >Campo fim da experiência é obrigatório</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="float-end mt-3">
+                                <label>&nbsp;</label>
+                                <button type="button" id='removeExp' class="border mt-2 border-rounded btn bg bg-danger text-white" (click)="removerLinha(i,'experiencia')"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="float-end mt-3">
+                        <label>&nbsp;</label>
+                        <button type="button" id='addExp' class="border mt-2 border-rounded btn bg bg-success text-white" (click)="adicionarFormArray('experiencia')"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="row mt-3 mb-1">
+            <div class="col-12">
+                <div class="float-end">
+                    <div class="form-group">
+                        <div #botaoEnvio id="myDiv" [ngClass]="!mouseOver ? 'btn btn-group bg bg-primary' : 'btn btn-group bg bg-info'" (mouseover)="corMouseOver()" (mouseout)="corMouseOut()">
+                            <button [disabled]="ngForm.pending" type="submit" class="border border-0 bg-transparent text-white">Salvar <i class="fa-solid fa-check"></i></button>                    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
