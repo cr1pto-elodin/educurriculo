@@ -10,8 +10,9 @@
                     <div class="form-group">
                         <label for="nome">Nome<span class="text-danger">*</span>:</label>
                         <input type="text" placeholder="Nome" id="nome" formControlName="nome" class="form-control">
-                        <div *ngIf="(ngForm.controls['nome'].invalid && ngForm.controls['nome'].touched)">
-                            <span class="text-danger">Nome é obrigatório</span>
+                        <div *ngIf="(ngForm.controls['nome'].errors != null && ngForm.controls['nome'].touched)">
+                            <span class="text-danger" *ngIf="(ngForm.controls['nome'].errors!['Vazio'] != null)">Nome é obrigatório</span>
+                            <span class="text-danger" *ngIf="(ngForm.controls['nome'].errors!['Alfanumerico'] != null)">Nome não pode ter números</span>
                         </div>
                     </div>
                 </div>
@@ -102,7 +103,7 @@
                 <div class="col-3">
                     <div class="form-group">
                         <label for="pretensaoSalarial">Pretensão salarial<span class="text-danger">*</span>:</label>
-                        <input type="text" formControlName="pretensaoSalarial" id="pretensaoSalarial" class="form-control" mask="0*,00" (keypress)="isPositive($event)">
+                        <input type="text" formControlName="pretensaoSalarial" placeholder="1000,00" id="pretensaoSalarial" (input)="ValorReal($event)" class="form-control" mask="0*,00" (keypress)="isPositive($event)">
                     </div>
                 </div>
             </div>
@@ -236,7 +237,7 @@
                 <div class="float-end">
                     <div class="form-group">
                         <div #botaoEnvio id="myDiv" [ngClass]="!mouseOver ? 'btn btn-group bg bg-primary' : 'btn btn-group bg bg-info'" (mouseover)="corMouseOver()" (mouseout)="corMouseOut()">
-                            <button [disabled]="ngForm.pending" type="submit" class="border border-0 bg-transparent text-white">Salvar <i class="fa-solid fa-check"></i></button>                    
+                            <button [disabled]="isPending" type="submit" class="border border-0 bg-transparent text-white">Salvar <i class="fa-solid fa-check"></i></button>                    
                         </div>
                     </div>
                 </div>

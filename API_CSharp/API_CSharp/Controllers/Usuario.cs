@@ -18,7 +18,7 @@ namespace API_CSharp.Controllers
             _repository= usuarioRepository;
         }
         [HttpPost]
-        public ActionResult<string> setUsuario([FromBody]API_CSharp.Models.Usuario usuario)
+        public ActionResult<string> setUsuario([FromBody] UsuarioModel usuario)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace API_CSharp.Controllers
         }
 
         [HttpGet(Name = "GetUsuario")]
-        public ActionResult<List<API_CSharp.Models.Usuario>> getUsuario()
+        public ActionResult<List<API_CSharp.Models.UsuarioModel>> getUsuario()
         {
             return _repository.GetUsuarios();
         }

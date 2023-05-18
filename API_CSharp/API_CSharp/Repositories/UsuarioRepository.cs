@@ -13,11 +13,11 @@ namespace API_CSharp.Repositories
             _configuration = _config;
             _db = new SqlConnection(_config.GetConnectionString("DEV"));
         }
-        public List<Usuario> GetUsuarios()
+        public List<UsuarioModel> GetUsuarios()
         {
             using(_db)
             {
-                List<Usuario> usuario = _db.Query<Usuario>(
+                List<UsuarioModel> usuario = _db.Query<UsuarioModel>(
                     @"SELECT 
                         ID,
                         [USER_NAME],

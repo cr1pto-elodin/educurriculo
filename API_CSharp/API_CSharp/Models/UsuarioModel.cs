@@ -3,7 +3,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace API_CSharp.Models
 {
-    public class Usuario
+    public class UsuarioModel
     {
         public int? id { get; set; }
         public string nome { get; set; }
@@ -16,6 +16,7 @@ namespace API_CSharp.Models
         public string sexo { get; set; }
         public string ecivil { get; set; }
         public DateTime datanascimento { get; set; }
+        public decimal pretensaoSalarial { get; set; }
         public bool ativo { get; set; }
 
     }

@@ -15,6 +15,8 @@ import { Observable } from 'rxjs';
 export class FormularioComponent {
   ngForm!: FormGroup;
   mouseOver: boolean;
+  isPending:boolean;
+  PretensaoSalarial:string;
 
   @ViewChild("botaoEnvio",{static: false}) botaoEnvio!: ElementRef;
   @ViewChild("formulario",{static: false}) formulario!: ElementRef;
@@ -22,34 +24,25 @@ export class FormularioComponent {
   constructor(private toastr: ToastrService, private cadastro: CadastroService, private fb: FormBuilder,
     private change: ChangeDetectorRef){
     this.mouseOver = false; 
+    this.isPending = false;
+    this.PretensaoSalarial = "";
   }
   
   ngOnInit():void{
     this.ngForm = this.fb.group({
-      nome: new FormControl('',Validators.required),
+      nome: new FormControl('',{validators: this.validaNome, updateOn: "blur"}),
       senha: new FormControl('',Validators.required),
       csenha: new FormControl('',Validators.required),
       cpf: new FormControl('',this.validarCPF),
-      dtnascimento: new FormControl('',{
-        validators: this.validarDataNascimento,
-        updateOn: "blur"
-      }),
-      usuario: new FormControl('',{
-        validators:this.validarUsuario,
-        updateOn: "blur"
-      }),
+      dtnascimento: new FormControl('',{validators: this.validarDataNascimento,updateOn: "blur"}),
+      usuario: new FormControl('',{validators:this.validarUsuario,updateOn: "blur"}),
       pretensaoSalarial: new FormControl('',Validators.required),
       escolaridade: new FormControl('MI'),
       sexo: new FormControl('F'),
       ecivil: new FormControl('S'),
       cursos: this.fb.array([this.criarFormCursos()]),
-      experiencia: this.fb.array([])
+      experiencia: this.fb.array([this.criarFormExperiencia()])
     });
-
-    
-
-    this.getArray("experiencia").push(this.criarFormExperiencia());
-    console.log(this.getArray("experiencia").controls);
   }
 
   criarFormCursos(): FormGroup{
@@ -97,6 +90,10 @@ export class FormularioComponent {
     return event === '-' ? false : true;
   }
 
+  ValorReal(sal:any){
+    this.PretensaoSalarial = sal.target.value;
+  }
+
   getArray(array: string){
     return this.ngForm.get(array) as FormArray;
   }
@@ -114,6 +111,18 @@ export class FormularioComponent {
     const ref = this.getArray(array);
     if(ref.length==1) return;
     ref.removeAt(index);
+  }
+
+  validaNome(campo: AbstractControl){
+    const func: ValidatorFn = (campo:AbstractControl): {[key:string] : any} | null =>{
+      const padrao: RegExp = /^[a-zA-Z\s]*$/;
+      
+      if(campo.value=="") return {Vazio: true};
+      if(campo.value && !(padrao.test(campo.value))) return {Alfanumerico: true};
+      return null;
+    }
+
+    return func(campo);
   }
 
   validarUsuario(usuario:AbstractControl){
@@ -136,6 +145,8 @@ export class FormularioComponent {
 
   mensagemErro(campo:AbstractControl, chave:string):string{
     if(campo.valid) {return "";}
+    if(chave=="experiencia") return "Experiência(s) inválida(s)<br>";
+    if(chave=="cursos") return "Certificações inválidas<br>";
     const labels = this.formulario.nativeElement.querySelectorAll("label");
     let label: string = "";
     
@@ -155,15 +166,34 @@ export class FormularioComponent {
     this.mouseOver = false;
   }
 
-  async CadastroApi():Promise<any>{
-    try{
-      const usuario = this.ngForm.value;
-      let dados = await this.cadastro.setUsuario(usuario);
-      console.log(dados);
-    }catch(ex){
-      console.log(ex);
+  corPending(estado:string){
+    const myDiv = this.botaoEnvio.nativeElement;
+
+    if(estado=="pending"){
+      myDiv.classList.remove("bg-info","bg-primary");
+      myDiv.classList.add("bg-secondary");
+      return;
     }
 
+    myDiv.classList.add("bg-primary");
+    myDiv.classList.remove("bg-secondary");
+  }
+
+  async CadastroApi():Promise<any>{
+    try{
+      let usuario = this.ngForm.value;
+      usuario.pretensaoSalarial = parseFloat(this.PretensaoSalarial.replace(",","."));
+      let dados = await this.cadastro.setUsuario(usuario);
+      console.log(dados);
+      
+      this.toastr.success("Cadastro realizado com sucesso!");
+    }catch(ex){
+      console.log(ex);
+      this.toastr.error("Cadastro não realizado. Favor tentar novamente.");
+      this.corPending("unpending");
+
+      this.isPending = false;
+    }
   }
 
   onSubmit(formulario:FormGroup):void {
@@ -177,14 +207,9 @@ export class FormularioComponent {
       return;
     } 
     
-    this.ngForm.markAsPending();
-    
-    const myDiv = this.botaoEnvio.nativeElement;
-    
-    myDiv.classList.remove("bg-info","bg-primary");
-    myDiv.classList.add("bg-secondary");
+    this.isPending = true;
+    this.corPending("pending");
 
     this.CadastroApi();
-    this.toastr.success("Cadastro com sucesso!");
   }
 }
