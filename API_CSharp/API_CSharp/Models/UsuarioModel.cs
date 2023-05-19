@@ -15,6 +15,7 @@ namespace API_CSharp.Models
         public List<CursoModel> Cursos { get; set; }
         public string sexo { get; set; }
         public string ecivil { get; set; }
+        public string escolaridade { get; set; }
         public DateTime datanascimento { get; set; }
         public decimal pretensaoSalarial { get; set; }
         public bool ativo { get; set; }

@@ -24,11 +24,10 @@ namespace API_CSharp.Controllers
             {
                 if (usuario == null) return BadRequest(new { message = "Argumento vazio" });
 
-                //var usuario = JsonConvert.DeserializeObject<Usuario>(request);
+                usuario.senha = CriptografaService.EncryptMD5(usuario.senha);
 
-                //string senha = CriptografaService.EncryptMD5(usuario.senha);
+                if (_repository.CheckUser(usuario.cpf)) return Conflict(new { message = "Usuário já cadastrado! Favor logar!" }); 
 
-                //return Ok(JsonConvert.SerializeObject(new { senhaCripto =  senha}));
                 return Ok(JsonConvert.SerializeObject(usuario));
             }
             catch(Exception ex)

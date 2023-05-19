@@ -187,9 +187,9 @@ export class FormularioComponent {
       console.log(dados);
       
       this.toastr.success("Cadastro realizado com sucesso!");
-    }catch(ex){
+    }catch(ex:any){
       console.log(ex);
-      this.toastr.error("Cadastro não realizado. Favor tentar novamente.");
+      this.toastr.error(ex.error.message);
       this.corPending("unpending");
 
       this.isPending = false;
