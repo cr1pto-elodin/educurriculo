@@ -58,8 +58,8 @@ namespace API_CSharp.Repositories
                 try
                 {
                     var linha = db.Execute($@"SP_CADASTRO_ACESSO 
-                                                                @USER_NAME = '{model.usuario}',
-                                                                @SENHA = '{model.senha}',
+                                                                @USER_NAME = '{model}',
+                                                                @SENHA = '{model}',
                                                                 @CPF = '{model.cpf}',
                                                                 @NOME = '{model.nome}',
                                                                 @DATA_NASCIMENTO = '{model.datanascimento}',

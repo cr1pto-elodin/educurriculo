@@ -7,4 +7,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'EduCurriculo';
+  cadastro: boolean = true;
+  login: boolean = false;
 }

@@ -11,10 +11,10 @@ namespace API_CSharp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class Usuario : ControllerBase
+    public class UsuarioController : ControllerBase
     {
         private readonly UsuarioRepository _repository;
-        public Usuario(UsuarioRepository usuarioRepository) {
+        public UsuarioController(UsuarioRepository usuarioRepository) {
             _repository= usuarioRepository;
         }
         [HttpPost]
@@ -24,9 +24,11 @@ namespace API_CSharp.Controllers
             {
                 if (usuario == null) return BadRequest(new { message = "Argumento vazio" });
 
-                usuario.senha = CriptografaService.EncryptMD5(usuario.senha);
+                usuario.acesso.senha = CriptografaService.EncryptMD5(usuario.acesso.senha);
 
-                if (_repository.CheckUser(usuario.cpf)) return Conflict(new { message = "Usuário já cadastrado! Favor logar!" }); 
+                if (_repository.CheckUser(usuario.cpf)) return Conflict(new { message = "Usuário já cadastrado! Favor logar!" });
+
+                _repository.InsertUser(usuario);
 
                 return Ok(JsonConvert.SerializeObject(usuario));
             }

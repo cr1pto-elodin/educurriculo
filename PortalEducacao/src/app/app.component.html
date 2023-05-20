@@ -1,2 +1,8 @@
-<app-cabecalho></app-cabecalho>
-<app-formulario></app-formulario>
+<div name="principal">
+    <app-cabecalho></app-cabecalho>
+    <div name="controlador">
+        <app-formulario *ngIf="cadastro"></app-formulario>
+        <app-login-page *ngIf="login"></app-login-page>
+    </div>
+</div>
+

@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 
 import { CadastroService } from '../cadastro.service';
 import { Observable } from 'rxjs';
+import { ConversorService } from '../conversor.service';
 
 @Component({
   selector: 'app-formulario',
@@ -22,7 +23,7 @@ export class FormularioComponent {
   @ViewChild("formulario",{static: false}) formulario!: ElementRef;
   
   constructor(private toastr: ToastrService, private cadastro: CadastroService, private fb: FormBuilder,
-    private change: ChangeDetectorRef){
+    private change: ChangeDetectorRef, private conversor: ConversorService){
     this.mouseOver = false; 
     this.isPending = false;
     this.PretensaoSalarial = "";
@@ -182,8 +183,7 @@ export class FormularioComponent {
   async CadastroApi():Promise<any>{
     try{
       let usuario = this.ngForm.value;
-      usuario.pretensaoSalarial = parseFloat(this.PretensaoSalarial.replace(",","."));
-      let dados = await this.cadastro.setUsuario(usuario);
+      let dados = await this.cadastro.setUsuario(this.conversor.converteRespostaUsuario(usuario,this.PretensaoSalarial.replace(",",".")));
       console.log(dados);
       
       this.toastr.success("Cadastro realizado com sucesso!");

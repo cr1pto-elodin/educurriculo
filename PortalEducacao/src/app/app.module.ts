@@ -14,12 +14,14 @@ import { NgxMaskModule } from 'ngx-mask';
 import { ToastrModule } from 'ngx-toastr';
 import * as moment from 'moment';
 import { Observable } from 'rxjs';
+import { LoginPageComponent } from './login-page/login-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CabecalhoComponent,
-    FormularioComponent
+    FormularioComponent,
+    LoginPageComponent
   ],
   imports: [
     BrowserModule,

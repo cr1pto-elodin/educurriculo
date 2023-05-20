@@ -8,11 +8,8 @@ import { Observable } from 'rxjs';
 export class CadastroService {
 
   constructor(private http: HttpClient) { }
-
   
   async setUsuario(form:Object):Promise<any>{
-    console.log(form);
-    debugger;
     const options: Object = new HttpHeaders({
       'Content-Type' : "application/json"
     });
