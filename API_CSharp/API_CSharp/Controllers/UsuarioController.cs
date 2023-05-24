@@ -18,7 +18,7 @@ namespace API_CSharp.Controllers
             _repository= usuarioRepository;
         }
         [HttpPost]
-        public ActionResult<string> setUsuario([FromBody] UsuarioModel usuario)
+        public ActionResult<string> InsertUsuario([FromBody] UsuarioModel usuario)
         {
             try
             {
@@ -27,8 +27,6 @@ namespace API_CSharp.Controllers
                 usuario.acesso.senha = CriptografaService.EncryptMD5(usuario.acesso.senha);
 
                 if (_repository.CheckUser(usuario.cpf)) return Conflict(new { message = "Usuário já cadastrado! Favor logar!" });
-
-                _repository.InsertUser(usuario);
 
                 return Ok(JsonConvert.SerializeObject(usuario));
             }

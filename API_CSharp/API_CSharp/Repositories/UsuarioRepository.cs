@@ -8,72 +8,93 @@ namespace API_CSharp.Repositories
 {
     public class UsuarioRepository
     {
-        private readonly IConfiguration _configuration;
         private readonly SqlConnection _db;
-        public UsuarioRepository(IConfiguration _config) {
-            _configuration = _config;
+        public UsuarioRepository(IConfiguration _config)
+        {
             _db = new SqlConnection(_config.GetConnectionString("DEV"));
+            _db.Open();
         }
         public List<UsuarioModel> GetUsuarios()
         {
-            using(_db)
-            {
-                List<UsuarioModel> usuario = _db.Query<UsuarioModel>(
-                    @"SELECT 
-                        ID,
-                        [USER_NAME],
-                        CPF,
-                        ATIVO,
-                        NOME,
-                        DATANASCIMENTO,
-                        SEXO,
-                        ESTADO_CIVIL, 
-                        ESCOLARIDADE
-                    FROM ACESSO INNER JOIN CADASTRO ON ACESSO.ID = CADASTRO.ID_ACESSO").ToList();
-                return usuario;
-            }
+            List<UsuarioModel> usuario = _db.Query<UsuarioModel>(
+                @"SELECT 
+                    ID,
+                    [USER_NAME],
+                    CPF,
+                    ATIVO,
+                    NOME,
+                    DATANASCIMENTO,
+                    SEXO,
+                    ESTADO_CIVIL, 
+                    ESCOLARIDADE
+                FROM ACESSO INNER JOIN CADASTRO ON ACESSO.ID = CADASTRO.ID_ACESSO").ToList();
+            return usuario;
         }
 
         public bool CheckUser(string cpf)
         {
             try
             {
-                using(var db = _db)
-                {
-                    var retorno = db.Query($"SP_CONSULTAR_USUARIO @CPF = '{cpf}'");
-                    if (retorno.Count() == 1) return true;
-                    return false;
-                }
+               var retorno = _db.Query($"SP_CONSULTAR_USUARIO @CPF = '{cpf}'");
+               if (retorno.Count() == 1) return true;
+               return false;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
         }
 
-        public int InsertUser(UsuarioModel model)
+        public void InsertUser(SqlConnection connection,UsuarioModel usuario, SqlTransaction transaction)
         {
-            using(var db = _db)
+            
+            connection.Execute($@"SP_CADASTRO_ACESSO",
+                new
+                {
+                    USER_NAME = usuario.acesso.usuario,
+                    SENHA = usuario.acesso.senha,
+                    CPF = usuario.cpf,
+                    NOME = usuario.nome,
+                    DATANASCIMENTO = usuario.datanascimento,
+                    SEXO = usuario.sexo,
+                    ESTADO_CIVIL = usuario.ecivil,
+                    ESCOLARIDADE = usuario.escolaridade,
+                    PRETENSAO_SAL = usuario.pretensaoSalarial
+                }, transaction);
+        }
+
+        public void InsertCertificacoes(SqlConnection connection,List<CursoModel> curso, string cpf, SqlTransaction transaction)
+        {
+            
+            foreach(CursoModel certificacao in curso)
             {
-                try
-                {
-                    var linha = db.Execute($@"SP_CADASTRO_ACESSO 
-                                                                @USER_NAME = '{model}',
-                                                                @SENHA = '{model}',
-                                                                @CPF = '{model.cpf}',
-                                                                @NOME = '{model.nome}',
-                                                                @DATA_NASCIMENTO = '{model.datanascimento}',
-                                                                @SEXO = '{model.sexo}',
-                                                                @ESTADO_CIVIL = '{model.ecivil}',
-                                                                @ESCOLARIDADE = '{model.escolaridade}',
-                                                                @PRETENSAO_SAL = {model.pretensaoSalarial}");
-                    return linha;
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                connection.Execute("SP_CADASTRO_CERTIFICACOES",
+                    new
+                    {
+                        CPF = cpf,
+                        INSTITUICAO = certificacao.Instituicao,
+                        CURSO = certificacao.Curso,
+                        INICIO = certificacao.inicio_Curso,
+                        FIM = certificacao.Fim_curso
+                    }, transaction);
             }
+        }
+
+        public void InsertExperiencias(SqlConnection connection, List<ExperienciaModel> experiencias, string cpf, SqlTransaction transaction)
+        {
+            foreach(ExperienciaModel experiencia in experiencias)
+            {
+                connection.Execute($@"SP_CADASTRO_EXPERIENCIA",
+                    new
+                    {
+                        CPF = cpf,
+                        EMPRESA = experiencia.Empresa,
+                        CARGO = experiencia.Cargo,
+                        INICIOEX = experiencia.Inicioex,
+                        FIMEX = experiencia.Fimex
+                    },transaction);
+            }
+            
         }
     }
 }
